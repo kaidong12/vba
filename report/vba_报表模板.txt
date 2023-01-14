@@ -1,0 +1,30 @@
+'*************************************************报表模板页面*************************************************
+
+ Sub 工程信息输入()
+'显示   窗体
+UserForm1.Show
+End Sub
+Private Sub Worksheet_Activate()
+ Application.CommandBars("工程信息").Visible = True
+
+ Static w As Integer
+ If w = 0 Then
+ Dim newSubItem5 As Object
+   Set newSubItem5 = CommandBars("工程信息")
+   With newSubItem5
+      '.Controls.Add(Type:=msoControlButton, before:=1).Caption = "subItem1"   其具体意义值得 研究
+
+      .Controls("工程基本信息输入").OnAction = "sheet5.工程信息输入"
+
+   End With
+   w = 0
+ End If
+ w = 1
+End Sub
+
+Private Sub Worksheet_Deactivate()
+Application.CommandBars("工程信息").Visible = False
+End Sub
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub

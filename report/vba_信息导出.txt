@@ -1,0 +1,357 @@
+
+
+'****************************************************所有问题一键搞定*****************************************************************
+
+Sub 统一稠度()  '稠度统一
+
+hh1 = UserForm3.kshh("稠度统一", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+Dim i, hsh As Integer
+
+  Sheets("信息导出").Select
+ 'n = counthsh("A", 2, "信息导出")
+ n = Application.WorksheetFunction.CountIf([A3:A5000], "*") '确定有多少行数据
+
+ Dim tstr As String
+
+  Sheets("信息导出").Cells(2, 8).Select
+
+  For i = 1 To n
+  tstr = ActiveCell.Offset(i, 0)
+
+  Select Case tstr
+
+  Case "W2"
+   tstr = "弱风化"
+  Case "W3"
+   tstr = "强风化"
+  Case "W4"
+   tstr = "全风化"
+   Case "饱和", "潮湿", "稍密"
+   ActiveCell.Offset(i, 0).Font.ColorIndex = 5
+   ActiveCell.Offset(i, 1).Font.ColorIndex = 4
+   Case "(无)"
+   tstr = ""
+  End Select
+  ActiveCell.Offset(i, 0) = tstr
+  Next i
+
+hh2 = UserForm3.jshh("信息导出")
+Application.ScreenUpdating = True
+
+End Sub
+
+Sub 格式转换()     '格式转换
+
+hh1 = UserForm3.kshh("格式转换", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+Sheets("信息中转站").Select
+Sheets("信息中转站").Rows("3:5000").Select
+Selection.Delete Shift:=xlUp
+
+Sheets("原始资料").Select
+Sheets("原始资料").Rows("5:3000").Select
+Selection.Delete Shift:=xlUp
+
+Sheets("信息导出").Select
+Sheets("信息导出").Rows("3:5000").Select
+Selection.Font.ColorIndex = 56
+
+n = Application.WorksheetFunction.CountIf([A3:A5000], "*") '确定有多少行数据
+
+ysk = 0
+For i = 1 To n
+
+ tstr1 = Sheets("信息导出").Cells(2 + i, 2)
+ tstr2 = Sheets("信息导出").Cells(1 + i, 2)
+
+   If tstr1 <> tstr2 Then
+    ysk = ysk + 1
+    Sheets("信息中转站").Select
+    Sheets("信息中转站").Cells(2 + i, 1).Select
+    ActiveCell.FormulaR1C1 = "=信息导出!RC"
+    ActiveCell.Offset(0, 1).FormulaR1C1 = "=LEFT(信息导出!RC,10)"
+    ActiveCell.Offset(0, 2).FormulaR1C1 = "=REPLACE(信息导出!RC[-1],1,10,"""")"
+    'ActiveCell.Offset(0, 3).FormulaR1C1 = _
+        "=CONCATENATE(""DK"",LEFT(信息导出!RC[-1] ,4),""+"",REPLACE(信息导出!RC[-1],1,4,""""))"
+    ActiveCell.Offset(0, 3).FormulaR1C1 = _
+        "=CONCATENATE(""DK"",INT(信息导出!RC[-1]/1000),""+"",REPLACE(信息导出!RC[-1],1,4,""""))"
+    ActiveCell.Offset(0, 4).FormulaR1C1 = "=IF(信息导出!RC[-1]=0,""中"",IF(信息导出!RC[-1]>0,""右"",""左""))"
+    ActiveCell.Offset(0, 5).FormulaR1C1 = _
+        "=IF(信息导出!RC[-2]=0,""无偏移"",IF(信息导出!RC[-2]>0,信息导出!RC[-2]&""m"",-信息导出!RC[-2]&""m""))"
+    ActiveCell.Offset(0, 13).FormulaR1C1 = "=信息导出!RC[-9]"
+    ActiveCell.Offset(0, 14).FormulaR1C1 = "=信息导出!RC[-9]"
+
+   End If
+
+   If ysk Mod 2 = 1 Then
+   Sheets("信息导出").Select
+   Sheets("信息导出").Rows(2 + i).Select
+   Selection.Font.ColorIndex = 3
+   Else
+   Sheets("信息导出").Select
+   Sheets("信息导出").Rows(2 + i).Select
+   Selection.Font.ColorIndex = 56
+   End If
+
+ Next i
+
+
+    Sheets("信息中转站").Select
+    Sheets("信息中转站").Rows("3:5000").Select '选择数据
+    Selection.AutoFilter Field:=1, Criteria1:="<>"     '自动筛选,选择非空数据
+
+    Sheets("信息中转站").Range(Sheets("信息中转站").Cells(3, 1), Sheets("信息中转站").Cells(5000, 15)).Select
+    Selection.Copy
+    Sheets("原始资料").Select
+    Sheets("原始资料").Range("A5").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+   'Selection.Format = "F2"
+    Sheets("信息中转站").Select
+    Sheets("信息中转站").Rows("3:5000").Select '选择数据
+    Selection.AutoFilter   '自动筛选,选择非空数据
+
+ hh2 = UserForm3.jshh("原始资料")
+ Application.ScreenUpdating = True
+
+End Sub
+
+Sub 地层厚度计算()   '地层厚度计算
+
+hh1 = UserForm3.kshh("地层厚度", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+Sheets("信息导出").Select
+n = Application.WorksheetFunction.CountIf([A3:A5000], "*") '确定有多少行数据
+Dim i, j As Integer
+j = 0
+For i = 1 To n    'i不只随着for改变,do语句也使i向下进行;
+
+  Dim k1, k2, k3 As Integer
+  Dim rd As String
+  Dim th, lh, rh, ks, yz As Single
+  th = 0
+  lh = 0
+  yh = 0
+  rh = 0
+  Dim tp As String
+  k1 = 0
+  k2 = 0         'flag2,如果k2为1则不再是第一层土
+  k3 = 0
+
+Do
+
+ tp = Sheets("信息导出").Cells(2 + i, 8)
+
+Select Case tp         '****************************************************
+
+Case "软塑", "硬塑", "全风化", ""
+If k2 = 0 Then
+th = Sheets("信息导出").Cells(2 + i, 7)
+Else: th = th + Sheets("信息导出").Cells(2 + i, 7) - Sheets("信息导出").Cells(1 + i, 7)
+End If
+k2 = 1
+
+Case "流塑"
+If k2 = 0 Then
+rh = Sheets("信息导出").Cells(2 + i, 7)
+Else: th = th + Sheets("信息导出").Cells(2 + i, 7) - Sheets("信息导出").Cells(1 + i, 7)
+End If
+k2 = 1
+
+Case "饱和", "潮湿", "强风化"
+ bb1 = Sheets("信息导出").Cells(2 + i, 9)
+
+ If (bb1 = "粉土") Or (bb1 = "细砂") Then
+  If k2 = 0 Then
+  th = Sheets("信息导出").Cells(2 + i, 7)
+  Else: th = th + Sheets("信息导出").Cells(2 + i, 7) - Sheets("信息导出").Cells(1 + i, 7)
+ End If
+
+ Else
+  If k2 = 0 Then
+  lh = Sheets("信息导出").Cells(2 + i, 7)
+  Else: lh = lh + Sheets("信息导出").Cells(2 + i, 7) - Sheets("信息导出").Cells(1 + i, 7)
+ End If
+
+ End If
+ k2 = 1
+
+Case "弱风化"
+  k3 = 1                  'flag3,若为1则进入弱风化了
+
+End Select                '****************************************************
+
+
+L: tstr1 = Sheets("信息导出").Cells(2 + i, 2)
+   tstr2 = Sheets("信息导出").Cells(3 + i, 2)
+
+
+If k3 = 1 Then
+
+  Do
+'L:  bb2 = Sheets("信息导出").Cells(2 + i, 2)
+    'bb3 = Sheets("信息导出").Cells(3 + i, 2)
+  ' If EXACT(tstr1, tstr2) Then
+    If tstr1 = tstr2 Then
+      i = i + 1
+      GoTo L
+    Else:
+      k1 = 1
+
+      'ActiveCell.FormulaR1C1 = "=TRUNC(RC[1],2)"
+
+      ks = Sheets("信息导出").Cells(2 + i, 7)
+      yz = Sheets("信息导出").Cells(2 + i, 10)
+
+      Sheets("原始资料").Select
+      Sheets("原始资料").Cells(5 + j, 9).Activate
+      ActiveCell = ks
+      ActiveCell.Offset(0, 1).FormulaR1C1 = th
+      ActiveCell.Offset(0, 2).FormulaR1C1 = rh
+      ActiveCell.Offset(0, 3).FormulaR1C1 = lh
+      ActiveCell.Offset(0, 4).FormulaR1C1 = ks - lh - rh - th
+
+      If ks <> yz Then
+        kk = MsgBox("发现异常情况，请检查计算数据！", 16, "地层厚度计算")
+        Sheets("原始资料").Rows(5 + j).Select
+        With Selection.Interior
+          .ColorIndex = 15
+          .Pattern = xlSolid
+        End With
+      End If
+
+      j = j + 1
+    End If
+  Loop Until k1 = 1             'flag1,如果k1为1则到孔底了
+
+ElseIf tstr1 <> tstr2 Then    '*************************此种情况下，钻孔未揭露基岩（弱风化）***************************
+  k1 = 1
+
+  ks = Sheets("信息导出").Cells(2 + i, 7)
+  yz = Sheets("信息导出").Cells(2 + i, 10)
+
+  Sheets("原始资料").Select
+  Sheets("原始资料").Cells(5 + j, 9).Activate
+  ActiveCell = ks
+  ActiveCell.Offset(0, 1).FormulaR1C1 = th
+  ActiveCell.Offset(0, 2).FormulaR1C1 = rh
+  ActiveCell.Offset(0, 3).FormulaR1C1 = lh
+  ActiveCell.Offset(0, 4).FormulaR1C1 = ks - lh - rh - th
+
+     If ks <> yz Then
+        kk = MsgBox("发现异常情况，请检查计算数据！", 16, "地层厚度计算")
+        Sheets("原始资料").Rows(5 + j).Select
+        With Selection.Interior
+          .ColorIndex = 15
+          .Pattern = xlSolid
+        End With
+      End If
+
+  j = j + 1
+End If
+
+If k1 = 0 Then
+i = i + 1
+End If
+
+Loop Until k1 = 1               'flag1,如果k1为1则到孔底了
+
+Next i
+
+hh2 = UserForm3.jshh("原始资料")
+Application.ScreenUpdating = True
+
+End Sub
+
+Sub 复制数据()
+
+On Error GoTo EL:
+
+hh1 = UserForm3.kshh("复制数据", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+  Sheets("导出页面").Select
+
+  Sheets("信息导出").Select
+  Sheets("信息导出").Rows(3 & ":" & 5000).Select
+  'Selection.ClearContents
+  Selection.Delete Shift:=xlUp
+
+    Sheets("导出页面").Select
+    Sheets("导出页面").Range("A65535").Select
+    n = ActiveCell.End(xlUp).Row
+
+  Sheets("导出页面").Select
+  'Sheets("导出页面").Range(Cells(2, 1), Cells(n, 11)).Select
+  Sheets("导出页面").Rows(2 & ":" & n).Select
+  'Selection.Cells.Font.Size = 10
+  Selection.Copy
+
+  Sheets("信息导出").Select
+  Sheets("信息导出").Range("A3").Select
+  Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+
+  'Selection.Cells.Font.Size = 10
+  'sort(l, m, k, n, st, o1, o2, o3) '排序以及数据筛选,形参:l为主要关键字，m为次要关键字，k为第三关键字,n为开始行数，st为表格名称
+
+  ppx = UserForm2.sort("A", "B", "G", 3, "信息导出", 1, 1, 1)
+
+EL:
+ hh2 = UserForm3.jshh("信息导出")
+ Application.ScreenUpdating = True
+
+End Sub
+
+Private Sub Worksheet_Activate()
+
+Application.CommandBars("数据导入").Visible = True
+Application.CommandBars("信息系统导出资料处理").Visible = True
+
+Static w As Integer
+If w = 0 Then
+
+ Dim newSubItem4, newSubItem5 As Object
+
+   Set newSubItem4 = CommandBars("信息系统导出资料处理")
+   With newSubItem4
+      .Controls("统一稠度").OnAction = "sheet7.统一稠度"
+      .Controls("格式转换").OnAction = "sheet7.格式转换"
+      .Controls("地层厚度生成").OnAction = "sheet7.地层厚度计算"
+   End With
+
+ Set newSubItem5 = CommandBars("数据导入")
+   With newSubItem5
+      .Controls("导入数据").OnAction = "数据库链接"
+      .Controls("复制数据").OnAction = "sheet7.复制数据"
+   End With
+
+ w = 0
+End If
+w = 1
+End Sub
+
+Private Sub Worksheet_Deactivate()
+Application.CommandBars("信息系统导出资料处理").Visible = False
+Application.CommandBars("数据导入").Visible = False
+End Sub
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub

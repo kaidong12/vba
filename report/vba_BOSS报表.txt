@@ -1,0 +1,27 @@
+
+Private Sub Worksheet_Activate()
+
+Application.CommandBars("报表输出").Visible = True
+
+End Sub
+
+Private Sub Worksheet_Deactivate()
+Application.CommandBars("报表输出").Visible = False
+End Sub
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+Static w As Integer
+If w = 0 Then
+
+ Dim newSubItem8 As Object
+
+   Set newSubItem8 = CommandBars("报表输出")
+   With newSubItem8
+      .Controls("统计报表输出").OnAction = "输出表格"
+   End With
+
+ w = 0
+End If
+w = 1
+End Sub

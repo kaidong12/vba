@@ -1,0 +1,257 @@
+Public Sub 数据库链接()    '自创方法
+
+   ' On Error GoTo EL
+    On Error Resume Next
+    hh1 = UserForm3.kshh("数据库导入", T)
+      If T = 0 Then
+        End
+      End If
+    Application.ScreenUpdating = False
+
+L:
+
+Dim fso As New FileSystemObject
+Dim myfile As File
+Dim mypath As String
+Dim myname As String
+
+    'Application.Dialogs(xlDialogOpen).Show
+
+    UserForm7.Show
+
+    mypath = UserForm7.ComboBox1.Text
+    'mypath = Application.GetOpenFilename("ACCESS数据库,*.mdb", , "选择数据库路径", , False)
+
+    If mypath = "" Or mypath = "False" Then              '***************************************预防空选现象******************************************
+
+      mg3 = MsgBox("数据库选择失败！", 37, "再选一次？")
+
+      If mg3 = 4 Then
+       GoTo L
+      Else
+       End
+      End If
+
+    End If
+
+      Set myfile = fso.GetFile(mypath)
+      myname = myfile.name
+      mg1 = MsgBox("文件名字：" & myfile.name & vbCrLf & "数据库路径：" & vbCrLf & myfile.Path & vbCrLf & "文件大小：" & myfile.Size & _
+      vbCrLf & "文件类型：" & myfile.Type & vbxrlf & "创建日期：" & myfile.DateCreated & vbCrLf & "最近一次访问日期：" & myfile.DateLastAccessed & vbCrLf & "最近一次修改日期：" & myfile.DateLastModified, 36, "你确认是TA吗？")
+
+    If mg1 = 7 Then
+    GoTo L
+    End If
+
+    mg2 = MsgBox("是否删除上次导出数据？", 36, "温馨提示")
+
+    If mg2 = 6 Then
+
+    Application.DisplayAlerts = False
+      Sheets("导出页面").Select
+      Sheets("导出页面").Delete
+    Application.DisplayAlerts = True
+
+    Else
+
+     Application.DisplayAlerts = False
+      Sheets("上次导出页面").Select
+      Sheets("上次导出页面").Delete
+     Application.DisplayAlerts = True
+      Sheets("导出页面").Select
+      Sheets("导出页面").name = "上次" & Sheets("导出页面").name
+
+    End If
+
+
+
+    ActiveWorkbook.Worksheets.Add
+    ActiveSheet.name = "导出页面"
+
+    With ActiveSheet.QueryTables.Add(Connection:=Array(Array( _
+        "ODBC;DSN=MS Access Database;" & "DBQ=" & mypath & ";FIL=MS Access;MaxBufferSize=20" _
+        ), Array("48;PageTimeout=5;")), Destination:=Range("A1"))
+        .CommandText = Array( _
+        "SELECT 勘察点.工程名称, 勘察点.名称, 勘察点.里程, 勘察点.偏移量, 钻孔.终孔日期, 勘察点.记录日期, 地层表.层深, 地层表.稠度, 地层表.岩性, 勘察点.深度, 地层表.岩性描述" & Chr(13) & "" & Chr(10) & "FROM (勘察点 INNER JOIN 钻孔 ON 勘" _
+        , "察点.ID = 钻孔.ID) INNER JOIN 地层表 ON 勘察点.ID = 地层表.ID" & Chr(13) & "" & Chr(10) & "WHERE (((勘察点.项目ID)=1));")
+        .name = "查询来自 MS Access Database"
+        .FieldNames = True
+        .RowNumbers = False
+        .FillAdjacentFormulas = False
+        .PreserveFormatting = True
+        .RefreshOnFileOpen = False
+        .BackgroundQuery = True
+        .RefreshStyle = xlInsertDeleteCells
+        .SavePassword = False
+        .SaveData = True
+        .AdjustColumnWidth = True
+        .RefreshPeriod = 0
+        .PreserveColumnInfo = True
+        .Refresh BackgroundQuery:=False
+    End With
+
+'EL:
+
+hh2 = UserForm3.jshh("信息导出")
+Application.ScreenUpdating = True
+
+End Sub
+
+
+Sub 链接方法2()                 '好方法
+
+On Error GoTo L
+
+Worksheets("方法2").Select
+Worksheets("方法3").Cells.Clear
+
+LL:
+
+    'mypath = Application.GetOpenFilename("ACCESS数据库,*.mdb", , "选择数据库路径", , False)
+
+   With ActiveSheet.QueryTables.Add(Connection:=Array(Array( _
+        "ODBC;DSN=MS Access Database;")), Destination:=Range("A1"))
+        .CommandText = Array( _
+        "SELECT 勘察点.工程名称, 勘察点.名称, 勘察点.里程, 勘察点.偏移量, 钻孔.终孔日期, 勘察点.记录日期, 地层表.层深, 地层表.稠度, 地层表.岩性, 勘察点.深度, 地层表.岩性描述" & Chr(13) & "" & Chr(10) & "FROM (勘察点 INNER JOIN 钻孔 ON 勘" _
+        , "察点.ID = 钻孔.ID) INNER JOIN 地层表 ON 勘察点.ID = 地层表.ID" & Chr(13) & "" & Chr(10) & "WHERE (((勘察点.项目ID)=1));" & Chr(13) & "" & Chr(10) & "")
+        .name = "查询来自 MS Access Database"
+        .FieldNames = True
+        .RowNumbers = False
+        .FillAdjacentFormulas = False
+        .PreserveFormatting = True
+        .RefreshOnFileOpen = False
+        .BackgroundQuery = True
+        .RefreshStyle = xlInsertDeleteCells
+        .SavePassword = False
+        .SaveData = True
+        .AdjustColumnWidth = True
+        .RefreshPeriod = 0
+        .PreserveColumnInfo = True
+        .Refresh BackgroundQuery:=False
+    End With
+
+    'With ActiveSheet.QueryTables.Add(Connection:=Array(Array("ODBC;DSN=MS Access Database;" _
+        & "DBQ=" & mypath & ";DefaultDir=D:\M.K\工作量\统计程序\1－13;"), _
+         Array("DriverId=25;FIL=MS Access;MaxBufferSize=2048;PageTimeout=5;")), Destination:=Range("A1")).CommandText = Array( _
+        "SELECT 勘察点.工程名称, 勘察点.名称, 勘察点.里程, 勘察点.偏移量, 钻孔.终孔日期,勘察点.记录日期, 地层表.层深, 地层表.稠度, 地层表.岩性, 勘察点.深度, 地层表.岩性描述" _
+        & Chr(13) & "" & Chr(10) & "FROM (勘察点 INNER JOIN 钻孔 ON 勘", "察点.ID = 钻孔.ID) INNER JOIN 地层表 ON 勘察点.ID = 地层表.ID" _
+        & Chr(13) & "" & Chr(10) & "WHERE (((勘察点.项目ID)=1));" & Chr(13) & "" & Chr(10) & "")
+
+  Sheets("新").Select
+  Selection.QueryTable.Delete
+
+Exit Sub
+L:
+'ActiveWorkbook.Sheets.Add
+'ActiveSheet.name = "新"
+'Resume LL
+
+End Sub
+
+
+Sub 数据库操作方法3()     '书中方法
+
+On Error Resume Next
+
+Dim myconnect As ADODB.Connection
+Dim mures As ADODB.Recordset
+Dim mydata As String, mysql As String
+mydata = Application.GetOpenFilename("ACCESS数据库,*.mdb", , "选择数据库路径", , False)
+Set myconnect = New ADODB.Connection
+myconnect.ConnectionString = "provider=microsoft.jet.oledb.4.0;" & "data source=" & mydata
+myconnect.Open
+Set myres = New ADODB.Recordset
+
+mysql = "SELECT 勘察点.工程名称, 勘察点.名称, 勘察点.里程, 勘察点.偏移量, 钻孔.终孔日期, 勘察点.记录日期, 地层表.层深, 地层表.稠度, 地层表.岩性, 勘察点.深度, 地层表.岩性描述" _
+& Chr(13) & "" & Chr(10) & "FROM (勘察点 INNER JOIN 钻孔 ON 勘察点.ID = 钻孔.ID) INNER JOIN 地层表 ON 勘察点.ID = 地层表.ID" _
+& Chr(13) & "" & Chr(10) & "WHERE ((勘察点.项目ID)=1);"
+
+myres.Open mysql, myconnect, adoenkeyset, adLockOptimistic
+
+Worksheets("方法3").Select
+Worksheets("方法3").Cells.Clear
+
+For icols = 0 To myres.Fields.Count - 1
+    Worksheets("方法3").Cells(1, icols + 1).Value = myres.Fields(icols).name
+Next icols
+
+Worksheets("方法3").Cells(2, 1).CopyFromRecordset myres
+Worksheets("方法3").Columns("A:K").AutoFit
+
+myres.Close
+myconnect.Close
+Set myres = Nothing
+Set myconnect = Nothing
+
+End Sub
+
+
+Sub 输出表格()
+
+mg3 = MsgBox("是否决定输出统计表格？", 36, "输出提示")
+
+    If mg3 = 7 Then
+    End
+    End If
+
+    Sheets("钻机报表").Select
+    aa = ActiveWorkbook.name
+    Workbooks.Add
+    bb = ActiveWorkbook.name
+    Windows(aa).Activate
+    Sheets("钻机报表").Select
+    Sheets("钻机报表").Copy Before:=Workbooks(bb).Sheets(1)
+    Windows(aa).Activate
+    Sheets("BOSS报表").Select
+    Sheets("BOSS报表").Copy Before:=Workbooks(bb).Sheets(1)
+    Windows(aa).Activate
+    Sheets("工作量报表").Select
+    Sheets("工作量报表").Copy Before:=Workbooks(bb).Sheets(1)
+
+    Application.DisplayAlerts = False
+
+    Sheets("Sheet1").Select
+    ActiveWindow.SelectedSheets.Delete
+    Sheets("Sheet2").Select
+    ActiveWindow.SelectedSheets.Delete
+    Sheets("Sheet3").Select
+    ActiveWindow.SelectedSheets.Delete
+
+    Application.DisplayAlerts = True
+
+    BC = Application.Dialogs(xlDialogSaveAs).Show("输出表格" & "（" & Date & "）")
+
+    '*******************************************************大大的发现啊********************************************************************
+
+'bb = Application.Dialogs(xlDialogOpen).Show("统计程序")
+
+'bb = Application.GetSaveAsFilename(, "EXCEL文件,*.xls", , "统计程序", "保存")
+
+End Sub
+
+Private Sub 数据库操作原程序()                   '书上原程序
+Dim myconnect As ADODB.Connection
+Dim mures As ADODB.Recordset
+Dim mydata As String, mysql As String
+mydata = Application.GetOpenFilename("ACCESS数据库,*.mdb", , "选择数据库路径", , False)
+Set myconnect = New ADODB.Connection
+myconnect.ConnectionString = "provider=microsoft.jet.oledb.4.0;" & "data source=" & mydata
+myconnect.Open
+Set myres = New ADODB.Recordset
+mysql = "SELECT 勘察点.工程名称, 勘察点.名称, 勘察点.里程, 勘察点.偏移量, 钻孔.终孔日期, 勘察点.记录日期, 地层表.层深, 地层表.稠度, 地层表.岩性, 勘察点.深度, 地层表.岩性描述" & Chr(13) & "" & Chr(10) & "FROM (勘察点 INNER JOIN 钻孔 ON 勘" _
+        & "察点.ID = 钻孔.ID) INNER JOIN 地层表 ON 勘察点.ID = 地层表.ID" & Chr(13) & "" & Chr(10) & "WHERE (((勘察点.项目ID)=1));"
+myres.Open mysql, myconnect, adoenkeyset, adLockOptimistic
+For icols = 0 To myres.Fields.Count - 1
+    Sheet1.Cells(1, icols + 1).Value = myres.Fields(icols).name
+Next icols
+Sheet1.Cells(2, 1).CopyFromRecordset myres
+myres.Close
+myconnect.Close
+Set myres = Nothing
+Set myconnect = Nothing
+End Sub
+
+
+
+
+

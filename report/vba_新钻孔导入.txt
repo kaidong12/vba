@@ -1,0 +1,34 @@
+Sub 数据输入()
+'显示窗体
+UserForm5.Show
+End Sub
+
+Private Sub Worksheet_Activate()
+
+Application.CommandBars("新钻孔输入").Visible = True
+
+ Static w As Integer
+ If w = 0 Then
+ Dim newSubItem6 As Object
+   Set newSubItem6 = CommandBars("新钻孔输入")
+   With newSubItem6
+      '.Controls.Add(Type:=msoControlButton, before:=1).Caption = "subItem1"   其具体意义值得 研究
+
+      .Controls("新钻孔数据输入").OnAction = "sheet10.数据输入"
+
+   End With
+   w = 0
+ End If
+ w = 1
+
+End Sub
+
+Private Sub Worksheet_Deactivate()
+
+Application.CommandBars("新钻孔输入").Visible = False
+
+End Sub
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub

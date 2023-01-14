@@ -1,0 +1,27 @@
+Private Sub Worksheet_Activate()
+'Application.CommandBars("快速查看").Visible = False
+'Application.CommandBars("试验").Visible = False
+'Sheets("主界面").Visible = True
+ActiveWindow.DisplayWorkbookTabs = False
+Application.DisplayFormulaBar = False
+End Sub
+Private Sub Worksheet_Deactivate()
+Application.CommandBars("快速查看").Visible = True
+Application.CommandBars("试验").Visible = True
+
+ActiveWindow.DisplayWorkbookTabs = True
+Application.DisplayFormulaBar = True
+Sheets("主界面").Visible = False
+
+End Sub
+
+Private Sub ShowFileAccessInfo()      '书上代码
+    Dim fs, d, f, s
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    Set f = fs.GetFile("E:\信息系统\Data\DlcGeoInfo.mdb")
+    s = UCase(f.Path) & vbCrLf
+    s = s & "Created: " & f.DateCreated & vbCrLf
+    s = s & "Last Accessed: " & f.DateLastAccessed & vbCrLf
+    s = s & "Last Modified: " & f.DateLastModified
+    MsgBox s, 0, "File Access Info"
+End Sub

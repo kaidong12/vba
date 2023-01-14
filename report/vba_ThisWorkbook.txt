@@ -1,0 +1,263 @@
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+
+On Error Resume Next
+
+Application.ScreenUpdating = False
+
+'Application.DisplayAlerts = False
+'Sheets("上次导出页面").Select
+'Sheets("上次导出页面").Delete
+'Application.DisplayAlerts = True
+
+    Sheets("新钻孔导入").Select
+    Cells.Select
+    With Selection.Font
+        .name = "楷体_GB2312"
+    End With
+    With Selection.Font
+        .name = "Times New Roman"
+    End With
+
+Application.ScreenUpdating = True
+
+Sheets("主界面").Visible = True
+Sheets("主界面").Select
+
+Application.CommandBars("工程信息").Delete
+Application.CommandBars("新钻孔输入").Delete
+Application.CommandBars("快速查看").Delete
+Application.CommandBars("完善钻孔资料").Delete
+Application.CommandBars("表格生成").Delete
+Application.CommandBars("数据导入").Delete
+Application.CommandBars("信息系统导出资料处理").Delete
+Application.CommandBars("试验").Delete
+Application.CommandBars("报表输出").Delete
+
+End Sub
+
+Private Sub Workbook_Open()
+
+'ActiveWorkbook.Application.OnKey "^{BREAK}", ""
+
+ 'dd = Application.Dialogs(xlDialogOpen).Show
+ Sheets("主界面").Select
+ Sheets("主界面").Cells.Font.ColorIndex = 2 '设置文字颜色为白色
+
+Dim ask As String
+ask = InputBox("请输入登录密码:", "登录", "******")
+
+L: If ask = "123hll" Then
+      Range("A1").Select
+      ActiveSheet.Cells.Font.ColorIndex = 4
+    ' 设置文字颜色为黑色
+
+
+ '***********************************************************************************************************
+ '工具按钮创建
+
+
+
+ Application.CommandBars.Add(name:="工程信息", Position:=msoBarTop).Visible = False
+     Dim newSubItem1 As Object
+      Set newSubItem1 = Application.CommandBars("工程信息")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem1
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "工程基本信息输入"
+      End With
+With newSubItem1.Controls("工程基本信息输入")
+.FaceId = 59
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet5.工程信息输入"
+End With
+
+ Application.CommandBars.Add(name:="新钻孔输入", Position:=msoBarTop).Visible = False
+     Dim newSubItem2 As Object
+      Set newSubItem2 = Application.CommandBars("新钻孔输入")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem2
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "新钻孔数据输入"
+      End With
+With newSubItem2.Controls("新钻孔数据输入")
+.FaceId = 64
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet10.数据输入"
+End With
+
+
+ Application.CommandBars.Add(name:="快速查看", Position:=msoBarFloating).Visible = False
+     Dim newSubItem3 As Object
+      Set newSubItem3 = Application.CommandBars("快速查看")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem3
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "排序查看"
+      End With
+With newSubItem3.Controls("排序查看")
+.FaceId = 2152
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.查看"
+End With
+
+Application.CommandBars.Add(name:="完善钻孔资料", Position:=msoBarTop).Visible = False
+     Dim newSubItem4 As Object
+      Set newSubItem4 = Application.CommandBars("完善钻孔资料")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem4
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "老资料利用"
+      .Controls.Add(Type:=msoControlButton, Before:=2).Caption = "新钻孔信息导入"
+      .Controls.Add(Type:=msoControlButton, Before:=3).Caption = "机组信息填充"
+      End With
+
+With newSubItem4.Controls("老资料利用")
+.FaceId = 64
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.老资料利用"
+End With
+
+ With newSubItem4.Controls("新钻孔信息导入")
+.FaceId = 64
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.新钻孔资料完善"
+End With
+
+ With newSubItem4.Controls("机组信息填充")
+.FaceId = 64
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.机组信息充填"
+End With
+
+
+
+ Application.CommandBars.Add(name:="表格生成", Position:=msoBarTop).Visible = False
+     Dim newSubItem5 As Object
+      Set newSubItem5 = Application.CommandBars("表格生成")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem5
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "钻机报表"
+      .Controls.Add(Type:=msoControlButton, Before:=2).Caption = "BOSS报表"
+      .Controls.Add(Type:=msoControlButton, Before:=3).Caption = "工作量报表"
+      End With
+
+With newSubItem5.Controls("钻机报表")
+.FaceId = 176
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.钻机报表"
+End With
+
+ With newSubItem5.Controls("BOSS报表")
+.FaceId = 176
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.BOSS报表"
+End With
+
+ With newSubItem5.Controls("工作量报表")
+.FaceId = 176
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet1.工作量报表"
+End With
+
+
+ Application.CommandBars.Add(name:="数据导入", Position:=msoBarTop).Visible = False
+     Dim newSubItem6 As Object
+      Set newSubItem6 = Application.CommandBars("数据导入")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem6
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "导入数据"
+      .Controls.Add(Type:=msoControlButton, Before:=2).Caption = "复制数据"
+      End With
+
+With newSubItem6.Controls("导入数据")
+.FaceId = 271
+.Style = msoButtonIconAndCaption
+.OnAction = "数据库链接"
+End With
+
+ With newSubItem6.Controls("复制数据")
+.FaceId = 271
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet7.复制数据"
+End With
+
+
+Application.CommandBars.Add(name:="信息系统导出资料处理", Position:=msoBarTop).Visible = False
+     Dim newSubItem7 As Object
+      Set newSubItem7 = Application.CommandBars("信息系统导出资料处理")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem7
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "统一稠度"
+      .Controls.Add(Type:=msoControlButton, Before:=2).Caption = "格式转换"
+      .Controls.Add(Type:=msoControlButton, Before:=3).Caption = "地层厚度生成"
+      End With
+
+With newSubItem7.Controls("统一稠度")
+.FaceId = 38
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet7.统一稠度"
+End With
+
+ With newSubItem7.Controls("格式转换")
+.FaceId = 39
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet7.格式转换"
+End With
+
+ With newSubItem7.Controls("地层厚度生成")
+.FaceId = 40
+.Style = msoButtonIconAndCaption
+.OnAction = "sheet7.地层厚度计算"
+End With
+
+
+ Application.CommandBars.Add(name:="试验", Position:=msoBarFloating).Visible = False
+     Dim newSubItem8 As Object
+      Set newSubItem8 = Application.CommandBars("试验")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem8
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "方法2"
+      .Controls.Add(Type:=msoControlButton, Before:=2).Caption = "方法3"
+      End With
+
+With newSubItem8.Controls("方法2")
+.FaceId = 59
+.Style = msoButtonIconAndCaption
+.OnAction = "链接方法2"
+End With
+
+ With newSubItem8.Controls("方法3")
+.FaceId = 276
+.Style = msoButtonIconAndCaption
+.OnAction = "数据库操作方法3"
+End With
+
+Application.CommandBars.Add(name:="报表输出", Position:=msoBarTop).Visible = False
+     Dim newSubItem9 As Object
+      Set newSubItem9 = Application.CommandBars("报表输出")
+     ' MsgBox newSubItem1.Controls("报表生成").FaceId
+      With newSubItem9
+      .Controls.Add(Type:=msoControlButton, Before:=1).Caption = "统计报表输出"
+      End With
+With newSubItem9.Controls("统计报表输出")
+.FaceId = 270
+.Style = msoButtonIconAndCaption
+.OnAction = "输出表格"
+End With
+
+
+'*****************************************************************************************************************
+
+
+    Else
+    Dim k As Integer
+      k = MsgBox("密码错误，即将退出！", 53, "再试一次？")
+    If k = 4 Then GoTo L
+      ActiveWorkbook.Close SaveChanges:=False
+    End If
+
+ UserForm4.Show (1)
+
+'Application.OnKey "^{BREAK}"
+
+
+
+
+End Sub

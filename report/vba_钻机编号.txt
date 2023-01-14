@@ -1,0 +1,17 @@
+'****************************************************钻机编号页面************************************************
+
+Private Sub Worksheet_Activate()
+'msg1 = MsgBox("钻机编号表一旦建立请不要随意更改", vbOKOnly, "温馨提示")
+ Application.OnKey "^{BREAK}", ""
+ UserForm6.Show (1)
+ Application.OnKey "^{BREAK}"
+End Sub
+
+Private Sub Worksheet_Deactivate()
+ 'UserForm6.Hide
+ End
+End Sub
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub

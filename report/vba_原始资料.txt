@@ -1,0 +1,1250 @@
+'****************************************************原始资料页面****************************************************************
+
+Function fuzhi(n, bm)         '模板复制，n为行数、bm为表名
+    Sheets("报表模板").Select
+    Sheets("报表模板").Range("A1:V31").Select
+    Selection.Copy
+    Sheets(bm).Select
+    s = "a" & n
+    Sheets(bm).Range(s).Select
+    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+        False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteColumnWidths, Operation:=xlNone, _
+        SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValidation, Operation:=xlNone, _
+        SkipBlanks:=False, Transpose:=False
+End Function
+
+Function charu(n, sts)             'n为行数
+   Sheets("报表模板").Select
+   Sheets("报表模板").Range("A1:V31").Select
+   Selection.Copy
+   Sheets(sts).Select
+   Sheets(sts).Rows(n).Select
+   Selection.Insert Shift:=xlDown
+End Function
+
+Function tianchong(i, j, k, sheet) 'i表示钻机报表行,j表示原始资料行,k表示钻孔序号,sheet为填充表名
+  Sheets("原始资料").Select
+  Sheets("原始资料").Range(Cells(j, 1), Cells(j, 17)).Select
+  Selection.Copy
+  Sheets(sheet).Select
+  Sheets(sheet).Cells(i, 2).Select
+  Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+  ActiveCell.Offset(0, -1) = k  '输入序号
+  ActiveCell.Offset(0, 1).Select
+  shangbiao
+  'ActiveCell.Offset(0, 3).Select
+  'Selection.Format = "F2"
+
+End Function
+  'Sheets(sheet).Select         '*********************************老填充方法********************************
+  'Sheets(sheet).Cells(i, 1) = k  '输入序号
+  'Sheets(sheet).Cells(i, 2) = Sheets("原始资料").Cells(j, 1)  '输入工程名称
+  'Sheets(sheet).Cells(i, 3) = Sheets("原始资料").Cells(j, 2)  '输入钻孔编号
+  'Sheets(sheet).Cells(i, 3).Activate
+  'shangbiao
+  'Sheets(sheet).Cells(i, 4) = Sheets("原始资料").Cells(j, 3) '输入钻孔里程
+  'Sheets(sheet).Cells(i, 4).Activate
+  'shuoxiao              '×××××××××多余××××××××××××
+  'Sheets(sheet).Cells(i, 5) = ct
+  'Sheets(sheet).Cells(i, 5).Activate  'Sheets("钻机报表").Cells(i, 4)
+  'ActiveCell.Offset(0, 1) = Sheets("原始资料").Cells(j, 4)
+  'ActiveCell.Offset(0, 2) = Sheets("原始资料").Cells(j, 5)
+  'ActiveCell.Offset(0, 3) = Sheets("原始资料").Cells(j, 6)
+  'ActiveCell.Offset(0, 4) = Sheets("原始资料").Cells(j, 7)
+  'ActiveCell.Offset(0, 5) = Sheets("原始资料").Cells(j, 8)
+  'ActiveCell.Offset(0, 6) = Sheets("原始资料").Cells(j, 5) - Sheets("原始资料").Cells(j, 6) - Sheets("原始资料").Cells(j, 7) - Sheets("原始资料").Cells(j, 8)  '基岩进尺
+  'ActiveCell.Offset(0, 7) = Sheets("原始资料").Cells(j, 9)
+  'ActiveCell.Offset(0, 8) = Sheets("原始资料").Cells(j, 10)
+  'ActiveCell.Offset(0, 9) = Sheets("原始资料").Cells(j, 11)
+  'ActiveCell.Offset(0, 10) = Sheets("原始资料").Cells(j, 12)
+  '
+  '****************************************************************************************************************************************************************************************
+
+Function biaoti(r, bt)   '设置BOSS报表标题    参数（行数,标题）
+
+  Sheets("BOSS报表").Range(Sheets("BOSS报表").Cells(r, 1), Sheets("BOSS报表").Cells(r, 22)).Select
+    Selection.ClearContents
+    Selection.UnMerge
+
+  Sheets("BOSS报表").Range(Sheets("BOSS报表").Cells(r, 6), Sheets("BOSS报表").Cells(r, 15)).Select
+    Selection.Merge
+    ActiveCell.FormulaR1C1 = bt
+
+  Sheets("BOSS报表").Range(Sheets("BOSS报表").Cells(r, 6), Sheets("BOSS报表").Cells(r, 15)).Select
+    With Selection
+        .HorizontalAlignment = xlDistributed    '分散对齐
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = True
+    End With
+
+End Function
+
+Function dayin(zy, bbm)  '形参（总行数,表名）
+        For i = 0 To zy - 1                          '**************************设置行高***********************
+          Sheets(bbm).Rows((i * 31 + 1)).Select
+          Selection.RowHeight = 24
+          Sheets(bbm).Rows((i * 31 + 2)).Select
+          Selection.RowHeight = 22
+          Sheets(bbm).Rows((i * 31 + 3)).Select
+          Selection.RowHeight = 9
+          Sheets(bbm).Rows((i * 31 + 4) & ":" & (i * 31 + 31)).Select    '要学习哦，活到老，学到老
+          Selection.RowHeight = 14.25
+        Next i
+End Function
+
+Function yemashu(n, j, k, sts)    '插入页码并设置字体格式
+         '形参：（插入行号，当前页码，总页数，报表名称）
+    Sheets(sts).Select
+    s = "S" & n + 1
+    Sheets(sts).Range(s).Select
+    Application.CutCopyMode = False
+    ActiveCell.FormulaR1C1 = "第 " & j & " 页"
+    With ActiveCell.Characters(Start:=1, Length:=1).Font
+        .name = "宋体"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = xlAutomatic
+    End With
+    With ActiveCell.Characters(Start:=2, Length:=3).Font '设置下划线
+        .name = "宋体"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleSingle
+        .ColorIndex = xlAutomatic
+    End With
+    With ActiveCell.Characters(Start:=5, Length:=1).Font
+        .name = "宋体"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = xlAutomatic
+    End With
+    Sheets(sts).Select
+    s = "U" & n + 1
+    Sheets(sts).Range(s).Select
+    Application.CutCopyMode = False
+    ActiveCell.FormulaR1C1 = "共 " & k & " 页"
+    With ActiveCell.Characters(Start:=1, Length:=1).Font
+        .name = "宋体"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = xlAutomatic
+    End With
+    With ActiveCell.Characters(Start:=2, Length:=3).Font
+        .name = "宋体"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleSingle
+        .ColorIndex = xlAutomatic
+    End With
+    With ActiveCell.Characters(Start:=5, Length:=1).Font
+        .name = "宋体"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = xlAutomatic
+    End With
+End Function
+
+Private Sub shangbiao()  '设置下标上标
+  ActiveCell.Select
+  With ActiveCell.Characters(Start:=5, Length:=2).Font
+        .name = "Times New Roman"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = True '下标
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = xlAutomatic
+    End With
+    With ActiveCell.Characters(Start:=7, Length:=3).Font
+        .name = "Times New Roman"
+        .FontStyle = "常规"
+        .Size = 10
+        .Strikethrough = False
+        .Superscript = True '上标
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = xlAutomatic
+    End With
+End Sub
+
+Private Sub shuoxiao()            '设置对象格式（居中并缩小字体填充）
+  ActiveCell.Select
+    With Selection
+      .HorizontalAlignment = xlCenter
+      .VerticalAlignment = xlCenter
+      .WrapText = False
+      .Orientation = 0
+      .AddIndent = False
+      .IndentLevel = 0
+      .ShrinkToFit = True
+      .ReadingOrder = xlContext
+      .MergeCells = False
+    End With
+End Sub
+
+
+
+Sub 钻机报表()             '************************************钻机报表填充*************************************
+
+hh1 = UserForm3.kshh("钻机报表", T)
+    If T = 0 Then
+     End
+    End If
+'UserForm3.Label1.Caption = "请确认是否进行后台处理！"
+'UserForm3.Show (0)
+'msg1 = MsgBox("  将要进行钻机报表填充", vbOKCancel, "钻机报表填充")
+'If msg1 = 2 Then
+'End
+'Else: msg1 = 1
+'UserForm3.Label1.Caption = "正在处理请耐心等候！"
+'End If
+'msg2 = MsgBox("   " & Time, vbokony, "    开始时间")
+'T1 = Time
+
+'******************************************************************会话界面******************************************************************
+
+Application.ScreenUpdating = False
+'sort(l, m, k, n, st, o1, o2, o3) '排序以及数据筛选,形参:l为主要关键字，m为次要关键字，k为第三关键字,n为开始行数，st为表格名称
+px = UserForm2.sort("P", "C", "N", 5, "原始资料", 1, 1, 1) '以钻机编号、钻孔编号进行排序
+
+  Sheets("原始资料").Select
+  Dim hangshu As Integer
+  hangshu = Application.WorksheetFunction.Count([I5:I3000]) '确定有多少行数据
+  Sheets("钻机报表").Select
+  Sheets("钻机报表").Cells.Select
+  Selection.Delete Shift:=xlUp
+  Dim zuanji(1 To 100) As Integer
+  zuanji(1) = Sheets("原始资料").Cells(5, 16) '第一行机组录入1号数组
+
+
+If zuanji(1) = 0 Then                               '***************************************************针对空表格
+ msg3 = MsgBox("无钻探记录或未输入机组编号！", 16, "原始资料")
+ Sheets("原始资料").Select
+ Sheets("原始资料").Cells(4, 1).Select
+ UserForm3.Hide
+Else                                                 '***************************************************针对空表格
+
+  Dim k As Integer
+  k = 1
+  For j = 6 To 4 + hangshu '确定有多少机组
+    kr = 0
+    r = Sheets("原始资料").Cells(j, 16)
+    For i = 1 To k
+      If zuanji(i) = r Then
+        kr = 1               'flag 1，若为0则是新钻机，若为1则数组中已记录
+        Exit For
+      End If
+    Next i
+
+    If kr = 0 Then
+      k = k + 1
+      zuanji(k) = r
+    End If
+    zuanji(k + 1) = "55"        'flag 2，结束循环的触发器（也可通过全局变量实现）
+  Next j
+
+
+Dim zongyeshu, yeshu1, yeshu2, yeshu3 As Integer
+zongyeshu = 0          '记录开始此次循环时指针在钻机报表中的位置的页数,作用范围大（同j）,在本次循环中其值不变
+For j = 1 To 100       '每次循环代表某一台钻机X的报表（循环的钻机至少有一个孔）
+
+    If zuanji(j) = "55" Then    '所有机组统计完后退出循环（flag 2）
+      Exit For
+    ElseIf zuanji(j) = 0 Then
+      msg1 = MsgBox("发现有未编号钻机！", 64, "空号钻机报告")
+    End If
+
+     'kongshu = Application.WorksheetFunction.CountIf([G5:G3000], zuanji(j)) '钻机孔数
+    fuzhi11 = fuzhi(zongyeshu * 31 + 1, "钻机报表") '复制一张表录入陆地孔
+
+    Dim hang11, hang12, hang13 As Integer
+    hang11 = 0 '确定陆地孔数
+    hang12 = 0 '确定水上孔数
+    hang13 = 0 '确定海潮孔数
+    For i = 5 To 4 + hangshu '在原始数据查找机组X，若是X机组的钻孔，则进行复制、填充，同时相应的变量赋新值
+      yeshu1 = hang11 \ 22 '陆地孔页数
+      yeshu2 = hang12 \ 22 '水上孔页数
+      yeshu3 = hang13 \ 22 '海潮孔页数
+
+      If Sheets("原始资料").Cells(i, 16) = zuanji(j) And (Sheets("原始资料").Cells(i, 7) = "陆地" Or Sheets("原始资料").Cells(i, 7) = "") Then  '此钻孔是否为陆地孔
+        hang11 = hang11 + 1 '孔数加一
+
+        If hang11 Mod 22 = 0 Then
+        gogogo = tianchong(zongyeshu * 31 + yeshu1 * 31 + 27, i, hang11, "钻机报表") '录入一行数据???
+        gogo = charu(zongyeshu * 31 + (yeshu1 + 1) * 31 + 1, "钻机报表")
+        Else: gogogo = tianchong(zongyeshu * 31 + yeshu1 * 31 + (hang11 Mod 22) + 5, i, hang11, "钻机报表")  '录入一行数据
+        End If
+      End If                                    '先插入页等待输入
+
+      If Sheets("原始资料").Cells(i, 16) = zuanji(j) And Sheets("原始资料").Cells(i, 7) = "水上" Then        '此钻孔是否为水上钻孔
+        If hang12 Mod 22 = 0 Then
+        gogo = charu(zongyeshu * 31 + yeshu2 * 31 + (yeshu1 + 1) * 31 + 1, "钻机报表")
+        End If
+        hang12 = hang12 + 1
+        If hang12 Mod 22 = 0 Then
+        gogogo = tianchong(zongyeshu * 31 + yeshu2 * 31 + (yeshu1 + 1) * 31 + 27, i, hang12, "钻机报表")
+        Else: gogogo = tianchong(zongyeshu * 31 + yeshu2 * 31 + (yeshu1 + 1) * 31 + (hang12 Mod 22) + 5, i, hang12, "钻机报表")   '录入一行数据
+        End If
+      End If                                 '有数据等待输入才插入页
+
+      If Sheets("原始资料").Cells(i, 16) = zuanji(j) And Sheets("原始资料").Cells(i, 7) = "海潮" Then  '此钻孔是否为海上钻孔
+        If hang13 Mod 22 = 0 And hang12 = 0 Then
+           gogo = charu(zongyeshu * 31 + (yeshu1 + 1) * 31 + yeshu3 * 31 + 1, "钻机报表")
+        Else: If hang13 Mod 22 = 0 Then gogo = charu(zongyeshu * 31 + (yeshu2 + 1) * 31 + (yeshu1 + 1) * 31 + yeshu3 * 31 + 1, "钻机报表")
+        End If
+        hang13 = hang13 + 1              '靠靠靠，竟然～～～是它，晕死
+
+        If hang13 Mod 22 = 0 And hang12 = 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu1 + 1) * 31 + 27, i, hang13, "钻机报表")
+        ElseIf hang13 Mod 22 > 0 And hang12 = 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu1 + 1) * 31 + (hang13 Mod 22) + 5, i, hang13, "钻机报表")
+        ElseIf hang13 Mod 22 = 0 And hang12 > 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu2 + 1) * 31 + (yeshu1 + 1) * 31 + 27, i, hang13, "钻机报表")
+        ElseIf hang13 Mod 22 > 0 And hang12 > 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu2 + 1) * 31 + (yeshu1 + 1) * 31 + (hang13 Mod 22) + 5, i, hang13, "钻机报表")
+        End If   '有数据等待输入才插入页
+      End If
+   Next i         '完成对i钻孔的判断与复制，进入下一条记录
+
+   If hang11 = 0 Then '确定陆地孔有几页
+      yeshu1 = 0       '使勿出现空页
+      Sheets("钻机报表").Select
+      guocheng = "a" & zongyeshu * 31 + 1 & ":u" & (zongyeshu + 1) * 31
+      Sheets("钻机报表").Range(guocheng).Select
+      Selection.Delete Shift:=xlUp
+    ElseIf hang11 Mod 22 = 0 Then
+           yeshu1 = hang11 \ 22 '使勿出现空页
+           Sheets("钻机报表").Select
+           guocheng = "a" & (zongyeshu + yeshu1) * 31 + 1 & ":u" & (zongyeshu + yeshu1 + 1) * 31
+           Sheets("钻机报表").Range(guocheng).Select
+           Selection.Delete Shift:=xlUp
+    Else: yeshu1 = hang11 \ 22 + 1 '因为只取整数部分
+    End If
+
+    If hang12 = 0 Then   '确定水上孔有几页
+        yeshu2 = 0
+    ElseIf hang12 Mod 22 = 0 Then yeshu2 = hang12 \ 22
+    Else: yeshu2 = hang12 \ 22 + 1 '因为只取整数部分
+    End If
+
+    If hang13 = 0 Then '确定海上孔有几页
+      yeshu3 = 0
+    ElseIf hang13 Mod 22 = 0 Then yeshu3 = hang13 \ 22
+    Else: yeshu3 = hang13 \ 22 + 1  '因为只取整数部分
+    End If
+
+    For i = 1 To yeshu1 '设置陆地孔页数
+      xx = yemashu(zongyeshu * 31 + (i - 1) * 31 + 1, i, yeshu1, "钻机报表")  '形参：（插入行号，当前页码，总页数，报表名称）
+    Next i
+    For i = 1 To yeshu2 '设置水上孔页数
+      xx = yemashu(zongyeshu * 31 + (i - 1 + yeshu1) * 31 + 1, i, yeshu2, "钻机报表")
+    Next i
+    For i = 1 To yeshu3 '设置海上孔页数
+      xx = yemashu(zongyeshu * 31 + (i - 1 + yeshu1 + yeshu2) * 31 + 1, i, yeshu3, "钻机报表")
+    Next i
+
+zongyeshu = zongyeshu + yeshu1 + yeshu2 + yeshu3
+
+Next j     '完成对X机组的统计
+
+'****************************************************************************************************************************************************
+
+dy1 = dayin(zongyeshu, "钻机报表")
+
+'****************************************************************************************************************************************************
+
+ hh2 = UserForm3.jshh("钻机报表")
+
+ 'UserForm3.Label1.Caption = "处理完毕下次再见！"
+ 'Sheets("钻机报表").Select
+ 'T2 = Time
+ 'msg3 = MsgBox("       处理用时" & Chr(13) & T1 & "--" & T2 & Chr(13) & "       用时" & Minute(T2 - T1) & ":" & Second(T2 - T1), vbOKOnly, "      处理完毕")
+ 'UserForm3.Hide
+End If                                              '***************************************************针对空表格
+
+Application.ScreenUpdating = True
+
+End Sub
+
+Sub 工作量报表()                  '*************************************工作量报表填充**************************************
+
+hh1 = UserForm3.kshh("工作量报表", T)
+    If T = 0 Then
+      End
+    End If
+'UserForm3.Label1.Caption = "请确认是否进行后台处理！"
+'UserForm3.Show (0)
+'msg1 = MsgBox("  将要进行工作量报表填充", vbOKCancel, "工作量报表填充")
+'If msg1 = 2 Then
+'End
+'Else: msg1 = 1
+'UserForm3.Label1.Caption = "正在处理请耐心等候！"
+'End If
+'msg2 = MsgBox("   " & Time, vbokony, "    开始时间")
+'T1 = Time
+
+'******************************************************************会话界面******************************************************************
+
+Application.ScreenUpdating = False
+'sort(l, m, k, n, st, o1, o2, o3) '形参:l为主要关键字，m为次要关键字，k为第三关键字,n为开始行数，st为表格名称
+px = UserForm2.sort("N", "A", "C", 5, "原始资料", 1, 1, 1) '以工程名称、终孔时间进行排序
+
+  Sheets("原始资料").Select
+Dim hangshu As Integer
+  hangshu = Application.WorksheetFunction.Count([I5:I3000]) '确定有多少行数据
+Dim shuikong, lukong, haikong                               'shuikong为水上孔个数,lukong为陆地孔个数,haikong为海上孔个数
+  shuikong = Application.WorksheetFunction.CountIf([G4:G3000], "水上")  '水上孔个数
+  haikong = Application.WorksheetFunction.CountIf([G4:G3000], "海潮")   '海上孔个数
+  lukong = hangshu - shuikong - haikong '陆地孔个数
+  Sheets("工作量报表").Select
+  Sheets("工作量报表").Cells.Select
+  Selection.Delete Shift:=xlUp
+Dim yeshu1, yeshu2, yeshu3 As Integer
+If lukong > 0 Then
+     If lukong Mod 22 = 0 Then
+        yeshu1 = lukong \ 22
+     Else: yeshu1 = lukong \ 22 + 1
+     End If
+Dim k, i As Integer
+    k = 0
+    k1 = k
+    fuzhi11 = fuzhi(1, "工作量报表") '复制一张表格
+    xx = yemashu(1, 1, yeshu1, "工作量报表") '设置页数
+
+    For j = 5 To 4 + hangshu
+      '复制数据到新的表格中
+       Sheets("原始资料").Select
+       ct = Sheets("原始资料").Cells(j, 7)
+       If (ct = "陆地") Or (ct = "") Then
+
+         b2l = 6 + (k Mod 22) + (k \ 22) * 31
+         go = tianchong(b2l, j, k + 1, "工作量报表")
+
+         k = k + 1
+       End If
+
+       If (k Mod 22) = 0 And k1 <> k Then     'k1为flag,不等说明有新陆地孔加入
+         fuzhi11 = fuzhi((k \ 22) * 31 + 1, "工作量报表") '增加一张表格
+         xx = yemashu((k \ 22) * 31 + 1, k \ 22 + 1, yeshu1, "工作量报表") '设置页数
+       End If
+       k1 = k
+    Next j
+    If lukong Mod 22 = 0 And yeshu1 > 0 Then
+      Sheets("工作量报表").Rows((yeshu1 * 31 + 1) & ":" & (yeshu1 * 31 + 31)).Select
+      Selection.Delete Shift:=xlUp
+    End If
+End If
+
+If shuikong > 0 Then
+     If shuikong Mod 22 = 0 Then
+        yeshu2 = shuikong \ 22
+     Else: yeshu2 = shuikong \ 22 + 1
+     End If
+    fuzhi11 = fuzhi(yeshu1 * 31 + 1, "工作量报表") '复制一张表格
+    xx = yemashu(yeshu1 * 31 + 1, 1, yeshu2, "工作量报表") '设置页数
+    k = 0
+    k1 = k
+    For j = 5 To 4 + hangshu  '复制数据到新的表格中
+       Sheets("原始资料").Select
+       ct = Sheets("原始资料").Cells(j, 7)
+       If ct = "水上" Then
+
+         b2s = 6 + (k Mod 22) + (yeshu1 + k \ 22) * 31
+         go = tianchong(b2s, j, k + 1, "工作量报表")
+
+         k = k + 1
+       End If
+       If ((k Mod 22) = 0) And k1 <> k And k \ 22 + 1 <= yeshu2 Then
+         fuzhi11 = fuzhi((yeshu1 + k \ 22) * 31 + 1, "工作量报表") '复制一张表格
+         xx = yemashu((yeshu1 + k \ 22) * 31 + 1, k \ 22 + 1, yeshu2, "工作量报表") '设置页数
+       End If
+      k1 = k
+    Next j
+    ' If shuikong Mod 22 = 0 And yeshu2 Then s = yeshu1 + yeshu2 Sheets("工作量报表").Rows((s * 31 + 1) & ":" & (s * 31 + 31)).Select Selection.Delete shift:=xlUp  End If
+End If
+
+If haikong > 0 Then
+     If haikong Mod 22 = 0 Then
+        yeshu3 = haikong \ 22
+     Else: yeshu3 = haikong \ 22 + 1
+     End If
+    fuzhi11 = fuzhi((yeshu1 + yeshu2) * 31 + 1, "工作量报表") '复制一张表格
+    xx = yemashu((yeshu1 + yeshu2) * 31 + 1, 1, yeshu3, "工作量报表") '设置页数
+    k = 0
+    k1 = k
+    For j = 5 To 4 + hangshu   '复制数据到新的表格中
+       Sheets("原始资料").Select
+       ct = Sheets("原始资料").Cells(j, 7)
+       If ct = "海潮" Then
+
+         b2h = 6 + (k Mod 22) + (yeshu1 + yeshu2 + k \ 22) * 31
+         go = tianchong(b2h, j, k + 1, "工作量报表")
+
+         k = k + 1
+       End If
+       If ((k Mod 22) = 0) And k1 <> k And k \ 22 + 1 <= yeshu3 Then
+         fuzhi11 = fuzhi((yeshu1 + yeshu2 + k \ 22) * 31 + 1, "工作量报表")                  '复制一张表格
+         xx = yemashu((yeshu1 + yeshu2 + k \ 22) * 31 + 1, k \ 22 + 1, yeshu3, "工作量报表")  '设置页数
+       End If
+      k1 = k
+    Next j
+    '（If haikong Mod 22 = 0 And yeshu3 > 0 Then  ' zz1 = "A" & Str((yeshu1 + yeshu2 + yeshu3) * 31)   zz2 = "U" & Str((yeshu1 + yeshu2 + yeshu3) * 31)  Sheets("工作量报表").Range("zz1:zz2").Select   'Sheets("工作量报表").Range( "a" & (yeshu1 + yeshu2 + yeshu3) * 31 : "u"&(yeshu1 + yeshu2 + yeshu3) * 31&31").Select      ' Sheets("工作量报表").Rows(((yeshu1 + yeshu2 + yeshu3) * 31 + 1) & ":" & ((yeshu1 + yeshu2 + yeshu3) * 31 + 31)).Select  竟然通不过    Sheets("工作量报表").Rows(Str((yeshu1 + yeshu2 + yeshu3) * 31 + 1) & ":" & Str((yeshu1 + yeshu2 + yeshu3) * 31 + 31)).Select    Selection.Delete shift:=xlUp    End If）
+End If
+
+'**********************************************************************************************************************
+
+Dim ldk(1 To 6), ssk(1 To 6), hsk(1 To 6) As Double   '***********************单项合计********************
+
+  Dim kg  As Integer
+  kg = 0
+If yeshu1 > 0 Then
+    hh1 = yeshu1 * 31 + 1
+    lzt = charu(hh1, "工作量报表")
+    Sheets("工作量报表").Cells(hh1 + 5, 1) = 1
+    Sheets("工作量报表").Cells(hh1 + 5, 1).Activate
+
+    ActiveCell.Offset(-5, 0).Font.ColorIndex = 3
+    ActiveCell.Offset(0, 1) = "钻探工作量"
+    ActiveCell.Offset(0, 4) = "单项合计"
+    ActiveCell.Offset(0, 4).HorizontalAlignment = xlCenter
+    ActiveCell.Offset(0, 7) = "陆地"
+
+    For i = 1 To 6
+        ldk(i) = 0
+        For o = 0 To yeshu1 - 1
+          ldk(i) = ldk(i) + Sheets("工作量报表").Cells(o * 31 + 28, 8 + i)
+        Next o
+    ActiveCell.Offset(0, 7 + i) = ldk(i)
+    Next i
+
+    ActiveCell.Offset(-5, 0).Select          '*****************************颜色设置***********************
+    With Selection.Interior
+        .ColorIndex = 17
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+    End With
+    kg = 1
+End If
+
+
+If yeshu2 > 0 Then
+    If yeshu1 = 0 Then
+    hh2 = yeshu2 * 31 + 1
+    Else: hh2 = (yeshu1 + yeshu2 + 1) * 31 + 1
+    End If
+    lzt = charu(hh2, "工作量报表")
+    Sheets("工作量报表").Cells(hh2 + 5, 1) = 1
+    Sheets("工作量报表").Cells(hh2 + 5, 1).Activate
+
+
+    ActiveCell.Offset(-5, 0).Font.ColorIndex = 3
+    ActiveCell.Offset(0, 1) = "钻探工作量"
+    ActiveCell.Offset(0, 4) = "单项合计"
+    ActiveCell.Offset(0, 4).HorizontalAlignment = xlCenter
+    ActiveCell.Offset(0, 7) = "水上"
+    For i = 1 To 6
+        ssk(i) = 0
+        For o = 0 To yeshu2 - 1
+          ssk(i) = ssk(i) + Sheets("工作量报表").Cells((yeshu1 + 1 + o) * 31 + 28, 8 + i)
+        Next o
+    ActiveCell.Offset(0, 7 + i) = ssk(i)
+    Next i
+
+    ActiveCell.Offset(-5, 0).Select          '*****************************颜色设置***********************
+    With Selection.Interior
+        .ColorIndex = 17
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+    End With
+    kg = kg + 2
+End If
+
+
+If yeshu3 > 0 Then
+
+   Select Case kg
+     Case 0
+     hh3 = yeshu3 * 31 + 1
+     Case 1
+     hh3 = (yeshu1 + yeshu3 + 1) * 31 + 1
+     Case 2
+     hh3 = (yeshu2 + yeshu3 + 2) * 31 + 1
+     Case 3
+     hh3 = (yeshu1 + yeshu2 + yeshu3 + 2) * 31 + 1
+   End Select
+
+    lzt = charu(hh3, "工作量报表")
+    Sheets("工作量报表").Cells(hh3 + 5, 1) = 1
+    Sheets("工作量报表").Cells(hh3 + 5, 1).Activate
+
+
+    ActiveCell.Offset(-5, 0).Font.ColorIndex = 3
+    ActiveCell.Offset(0, 1) = "钻探工作量"
+    ActiveCell.Offset(0, 4) = "单项合计"
+    ActiveCell.Offset(0, 4).HorizontalAlignment = xlCenter
+    ActiveCell.Offset(0, 7) = "海潮"
+    For i = 1 To 6
+        hsk(i) = 0
+        For o = 0 To yeshu3 - 1
+          hsk(i) = hsk(i) + Sheets("工作量报表").Cells((yeshu1 + yeshu2 + o) * 31 + 28, 8 + i)
+        Next o
+    ActiveCell.Offset(0, 7 + i) = hsk(i)
+    Next i
+
+    ActiveCell.Offset(-5, 0).Select          '*****************************颜色设置***********************
+    With Selection.Interior
+        .ColorIndex = 17
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+    End With
+
+End If
+
+dy2 = dayin(yeshu1 + yeshu2 + yeshu3 + 3, "工作量报表")
+
+If hangshu > 0 Then                                  '***************************************************针对空表格
+
+ hh2 = UserForm3.jshh("工作量报表")
+ 'UserForm3.Label1.Caption = "处理完毕下次再见！"
+ 'Sheets("工作量报表").Select
+ 'T2 = Time
+ 'msg3 = MsgBox("       处理用时" & Chr(13) & T1 & "--" & T2 & Chr(13) & "       用时" & Minute(T2 - T1) & ":" & Second(T2 - T1), vbOKOnly, "      处理完毕")
+ 'UserForm3.Hide
+Else                                                 '***************************************************针对空表格
+ Sheets("原始资料").Select
+ Sheets("原始资料").Cells(4, 1).Select
+ msg = MsgBox("无任何钻探记录，请输入！", 16, "工作量报表填充")
+End If                                               '***************************************************针对空表格
+
+Application.ScreenUpdating = True
+
+End Sub
+
+ Sub 查看()
+'显示窗体
+UserForm2.Show (0)
+End Sub
+
+Sub BOSS报表()               '********************************BOSS报表填充**********************************
+
+hh1 = UserForm3.kshh("BOSS报表", T)
+    If T = 0 Then
+      End
+    End If
+'UserForm3.Label1.Caption = "请确认是否进行后台处理！"
+'UserForm3.Show (0)
+'msg1 = MsgBox("  将要进行BOSS报表填充", vbOKCancel, "BOSS报表填充")
+'If msg1 = 2 Then
+'End
+'Else: msg1 = 1
+'UserForm3.Label1.Caption = "正在处理请耐心等候！"
+'End If
+'msg2 = MsgBox("   " & Time, vbokony, "    开始时间")
+'T1 = Time
+
+'******************************************************************会话界面******************************************************************
+
+Application.ScreenUpdating = False
+'sort(l, m, k, n, st, o1, o2, o3) '参数列表:l为主要关键字，m为次要关键字，k为第三关键字,n为开始行数，st为表格名称
+px = UserForm2.sort("R", "P", "N", 5, "原始资料", 1, 1, 1)            '以BOSS姓名、钻机编号进行排序
+
+
+  Sheets("原始资料").Select
+  Dim hangshu As Integer
+  hangshu = Application.WorksheetFunction.Count([I5:I3000]) '确定有多少行数据
+
+  'Sheets("原始资料").Range(Sheets("原始资料").Cells(4, 13), Sheets("原始资料").Cells(hangshu + 4, 13)).Select
+  'Selection.Copy
+  'Sheets("原始资料").Cells(4, 17).Select
+  'Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+
+  'Application.CutCopyMode = False
+
+  'Sheets("原始资料").Cells(3, 17).Select
+
+  'px = UserForm2.sort("Q", "K", 4, "原始资料", 1, 1)   '以BOSS姓名、钻机编号进行排序
+
+  'Sheets("原始资料").Rows("5:5").Select        '超级郁闷～～～～～～～～～～到底是怎么回事啊？？？？？？？？？
+  'Selection.Delete Shift:=xlUp                 '超级郁闷～～～～～～～～～～到底是怎么回事啊？？？？？？？？？
+                                                '超级郁闷～～～～～～～～～～到底是怎么回事啊？？？？？？？？？
+         '(莫明其妙的多出一个空行来)            '超级郁闷～～～～～～～～～～到底是怎么回事啊？？？？？？？？？
+                                                '超级郁闷～～～～～～～～～～到底是怎么回事啊？？？？？？？？？
+                                                '超级郁闷～～～～～～～～～～到底是怎么回事啊？？？？？？？？？
+
+  Sheets("BOSS报表").Select
+  Sheets("BOSS报表").Cells.Select
+  Selection.Delete Shift:=xlUp
+  Dim boss(1 To 20) As String
+
+  boss(1) = Sheets("原始资料").Cells(5, 18)  '第一个BOSS录入1号数组
+
+L: If hangshu = 0 Or boss(1) = "" Then              '***************************************************针对空表格
+     Sheets("原始资料").Select
+     Sheets("原始资料").Cells(5, 1).Select
+     msg2 = MsgBox("发现有未编号钻机！", 64, "空号钻机报告")
+     msg1 = MsgBox("原始资料为空或未输入机组编号,请输入！", vbAbortRetryIgnore, "BOSS报表")
+   End If
+If msg1 = 3 Then                                    '***************************************************针对空表格
+  End
+ElseIf msg1 = 4 Then
+  GoTo L
+End If                                              '***************************************************针对空表格
+
+  Dim k As Integer
+  k = 1
+  For j = 5 To 4 + hangshu '确定有多少BOSS                      (小心行的万年船啊！！！！！！！！！！)
+    kr = 0
+    r = Sheets("原始资料").Cells(j, 18)
+    For i = 1 To k
+      If boss(i) = r Then
+        kr = 1               'flag 1，若为0则是新BOSS，若为1则数组中已记录
+        Exit For
+      End If
+    Next i
+
+    If kr = 0 Then
+      k = k + 1
+      boss(k) = r
+    End If
+    boss(k + 1) = "#"        'flag 2，结束循环的触发器（也可通过全局变量实现）
+  Next j
+
+
+Dim kongshu, zongyeshu, yeshu1, yeshu2, yeshu3 As Integer
+zongyeshu = 0          '记录开始此次循环时指针在BOSS报表中的位置的页数,作用范围大（同j）,在本次循环中其值不变
+For j = 1 To 20       '每次循环代表某一BOSS的工作量报表（循环的BOSS至少有一个孔）
+
+    If boss(j) = "#" Then    '所有BOSS统计完后退出循环（flag 2）
+      Exit For
+    End If
+
+
+    kongshu = Application.WorksheetFunction.CountIf([Q4:Q3000], boss(j)) '钻机孔数
+    fuzhi11 = fuzhi(zongyeshu * 31 + 1, "BOSS报表") '复制一张表录入陆地孔
+
+    Dim hang11, hang12, hang13 As Integer
+    hang11 = 0 '确定陆地孔数
+    hang12 = 0 '确定水上孔数
+    hang13 = 0 '确定海潮孔数
+
+    For i = 5 To 4 + hangshu '在原始数据查找该BOSS，若是该BOSS的钻孔，则进行复制、填充，同时相应的变量赋新值
+
+      yeshu1 = hang11 \ 22 '陆地孔页数
+      yeshu2 = hang12 \ 22 '水上孔页数
+      yeshu3 = hang13 \ 22 '海潮孔页数
+
+      If Sheets("原始资料").Cells(i, 18) = boss(j) And (Sheets("原始资料").Cells(i, 7) = "陆地" Or Sheets("原始资料").Cells(i, 7) = "") Then  '此钻孔是否为陆地孔
+        hang11 = hang11 + 1 '孔数加一
+
+        If hang11 Mod 22 = 0 Then
+        gogogo = tianchong(zongyeshu * 31 + yeshu1 * 31 + 27, i, hang11, "BOSS报表")  '录入一行数据
+        gogo = charu(zongyeshu * 31 + (yeshu1 + 1) * 31 + 1, "BOSS报表")
+        Else: gogogo = tianchong(zongyeshu * 31 + yeshu1 * 31 + (hang11 Mod 22) + 5, i, hang11, "BOSS报表")  '录入一行数据
+        End If
+      End If                                    '先插入页等待输入
+
+      If Sheets("原始资料").Cells(i, 18) = boss(j) And Sheets("原始资料").Cells(i, 7) = "水上" Then '此钻孔是否为水上钻孔
+        If hang12 Mod 22 = 0 Then
+        gogo = charu(zongyeshu * 31 + yeshu2 * 31 + (yeshu1 + 1) * 31 + 1, "BOSS报表")
+        End If
+        hang12 = hang12 + 1
+        If hang12 Mod 22 = 0 Then gogogo = tianchong(zongyeshu * 31 + yeshu2 * 31 + (yeshu1 + 1) * 31 + 27, i, hang12, "BOSS报表") Else: gogogo = tianchong(zongyeshu * 31 + yeshu2 * 31 + (yeshu1 + 1) * 31 + (hang12 Mod 22) + 5, i, hang12, "BOSS报表")   '录入一行数据
+      End If        '有数据等待输入才插入页
+
+      If Sheets("原始资料").Cells(i, 18) = boss(j) And Sheets("原始资料").Cells(i, 7) = "海潮" Then  '此钻孔是否为海上钻孔
+        If hang13 Mod 22 = 0 And hang12 = 0 Then
+           gogo = charu(zongyeshu * 31 + (yeshu1 + 1) * 31 + yeshu3 * 31 + 1, "BOSS报表")
+        Else: If hang13 Mod 22 = 0 Then gogo = charu(zongyeshu * 31 + (yeshu2 + 1) * 31 + (yeshu1 + 1) * 31 + yeshu3 * 31 + 1, "BOSS报表")
+        End If
+        hang13 = hang13 + 1              '靠靠靠，竟然～～～是它，晕死
+
+        If hang13 Mod 22 = 0 And hang12 = 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu1 + 1) * 31 + 27, i, hang13, "BOSS报表")
+        ElseIf hang13 Mod 22 > 0 And hang12 = 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu1 + 1) * 31 + (hang13 Mod 22) + 5, i, hang13, "BOSS报表")
+        ElseIf hang13 Mod 22 = 0 And hang12 > 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu2 + 1) * 31 + (yeshu1 + 1) * 31 + 27, i, hang13, "BOSS报表")
+        ElseIf hang13 Mod 22 > 0 And hang12 > 0 Then
+           gogogo = tianchong(zongyeshu * 31 + yeshu3 * 31 + (yeshu2 + 1) * 31 + (yeshu1 + 1) * 31 + (hang13 Mod 22) + 5, i, hang13, "BOSS报表")
+        End If    '有数据等待输入才插入页
+      End If
+
+   Next i         '完成对i钻孔的判断与复制，进入下一条记录
+
+   If hang11 = 0 Then '确定陆地孔有几页
+      yeshu1 = 0       '使勿出现空页
+      Sheets("BOSS报表").Select
+      guocheng = "a" & zongyeshu * 31 + 1 & ":u" & (zongyeshu + 1) * 31
+      Sheets("BOSS报表").Range(guocheng).Select
+      Selection.Delete Shift:=xlUp
+    ElseIf hang11 Mod 22 = 0 Then
+           yeshu1 = hang11 \ 22 '使勿出现空页
+           Sheets("BOSS报表").Select
+           guocheng = "a" & (zongyeshu + yeshu1) * 31 + 1 & ":u" & (zongyeshu + yeshu1 + 1) * 31
+           Sheets("BOSS报表").Range(guocheng).Select
+           Selection.Delete Shift:=xlUp
+    Else: yeshu1 = hang11 \ 22 + 1 '因为只取整数部分
+    End If
+
+    If hang12 = 0 Then   '确定水上孔有几页
+        yeshu2 = 0
+    ElseIf hang12 Mod 22 = 0 Then yeshu2 = hang12 \ 22
+    Else: yeshu2 = hang12 \ 22 + 1 '因为只取整数部分
+    End If
+
+    If hang13 = 0 Then '确定海上孔有几页
+      yeshu3 = 0
+    ElseIf hang13 Mod 22 = 0 Then yeshu3 = hang13 \ 22
+    Else: yeshu3 = hang13 \ 22 + 1  '因为只取整数部分
+    End If
+
+    For i = 1 To yeshu1 '设置陆地孔页数
+
+      hh1 = zongyeshu * 31 + (i - 1) * 31 + 1
+      xx = yemashu(hh1, i, yeshu1, "BOSS报表")  '形参：（插入行号，当前页码，总页数，报表名称）
+      bm1 = boss(j) & "工作量报表"
+      xx1 = biaoti(hh1, bm1)
+    Next i
+
+    For i = 1 To yeshu2 '设置水上孔页数
+      hh2 = zongyeshu * 31 + (i - 1 + yeshu1) * 31 + 1
+      xx = yemashu(zongyeshu * 31 + (i - 1 + yeshu1) * 31 + 1, i, yeshu2, "BOSS报表")
+      bm2 = boss(j) & "工作量报表"
+      xx2 = biaoti(hh2, bm2)
+    Next i
+
+    For i = 1 To yeshu3 '设置海上孔页数
+      hh3 = zongyeshu * 31 + (i - 1 + yeshu1 + yeshu2) * 31 + 1
+      xx = yemashu(zongyeshu * 31 + (i - 1 + yeshu1 + yeshu2) * 31 + 1, i, yeshu3, "BOSS报表")
+      bm3 = boss(j) & "工作量报表"
+      xx3 = biaoti(hh3, bm3)
+    Next i
+
+zongyeshu1 = zongyeshu + yeshu1 + yeshu2 + yeshu3
+
+
+If yeshu1 > 0 Or yeshu2 > 0 Or yeshu3 > 0 Then
+
+
+fuzhi22 = fuzhi(zongyeshu1 * 31 + 1, "BOSS报表")            '复制一张表格统计该BOSS总工作量
+
+      hh4 = zongyeshu1 * 31 + 1
+      bm4 = boss(j) & "工作量总报表"
+      xx4 = biaoti(hh4, bm4)
+
+Sheets("BOSS报表").Cells(hh4 + 5, 1).Activate              '*************填充该BOSS总工作量表***********
+
+'Dim ldk(1 To 6), ssk(1 To 6), hsk(1 To 6) As Double
+
+    'Sheets("BOSS报表").Cells(hh4 + 5, 1) = 1
+    'ActiveCell.Offset(0, 1) = boss(j) & "钻机"
+    'ActiveCell.Offset(0, 4) = "单项合计"
+    'ActiveCell.Offset(0, 4).HorizontalAlignment = xlCenter
+    'ActiveCell.Offset(0, 7) = "陆地"
+    'For i = 1 To 5
+        'ldk(i) = 0
+        'For o = 0 To yeshu1 - 1
+          'ldk(i) = ldk(i) + Sheets("BOSS报表").Cells((zongyeshu + o) * 31 + 28, 8 + i)
+        'Next o
+    'ActiveCell.Offset(0, 7 + i) = ldk(i)
+    'Next i
+
+    'Sheets("BOSS报表").Cells(hh4 + 6, 1) = 2
+   'ActiveCell.Offset(1, 1) = boss(j) & "钻机"
+    'ActiveCell.Offset(1, 4) = "单项合计"
+    'ActiveCell.Offset(1, 4).HorizontalAlignment = xlCenter
+    'ActiveCell.Offset(1, 7) = "水上"
+    'For i = 1 To 5
+        'ssk(i) = 0
+        'For o = 0 To yeshu2 - 1
+          'ssk(i) = ssk(i) + Sheets("BOSS报表").Cells((zongyeshu + yeshu1 + o) * 31 + 28, 8 + i)
+        'Next o
+    'ActiveCell.Offset(1, 7 + i) = ssk(i)
+    'Next i
+
+    'Sheets("BOSS报表").Cells(hh4 + 7, 1) = 3
+    'ActiveCell.Offset(2, 1) = boss(j) & "钻机"
+    'ActiveCell.Offset(2, 4) = "单项合计"
+    'ActiveCell.Offset(2, 4).HorizontalAlignment = xlCenter
+    'ActiveCell.Offset(2, 7) = "海潮"
+    'For i = 1 To 5
+        'hsk(i) = 0
+        'For o = 0 To yeshu3 - 1
+          'hsk(i) = hsk(i) + Sheets("BOSS报表").Cells((zongyeshu + yeshu1 + yeshu2 + o) * 31 + 28, 8 + i)
+        'Next o
+    'ActiveCell.Offset(2, 7 + i) = hsk(i)
+    'Next i
+
+Dim zklx(1 To 3) As String
+    zklx(1) = "陆地"
+    zklx(2) = "水上"
+    zklx(3) = "海潮"
+
+Dim mm, jj, yy, yem As Integer
+    mm = 0
+    jj = 0
+    yy = 0
+Dim bb As Variant
+Dim tj(1 To 6) As Double
+For Each bb In zklx
+    Select Case bb
+      Case "陆地"
+      mm = 1
+      jj = 0
+      yy = 0
+      yem = yeshu1
+      Case "水上"
+      mm = 2
+      jj = 1
+      yy = 0
+      yem = yeshu2
+      Case "海潮"
+      mm = 3
+      jj = 1
+      yy = 1
+      yem = yeshu3
+    End Select
+
+    For T = 1 To 6
+    tj(T) = 0
+    Next T
+
+    Sheets("BOSS报表").Cells(hh4 + 4 + mm, 1) = mm
+    ActiveCell.Offset(mm - 1, 1) = boss(j) & "钻机"
+    ActiveCell.Offset(mm - 1, 4) = "单项合计"
+    ActiveCell.Offset(mm - 1, 4).HorizontalAlignment = xlCenter
+    ActiveCell.Offset(mm - 1, 7) = bb
+    For i = 1 To 6
+        tj(i) = 0
+        For o = 0 To yem - 1
+          tj(i) = tj(i) + Sheets("BOSS报表").Cells((zongyeshu + jj * yeshu1 + yy * yeshu2 + o) * 31 + 28, 8 + i)
+        Next o
+    ActiveCell.Offset(mm - 1, 7 + i) = tj(i)
+    Next i
+
+Next bb
+
+
+
+zongyeshu = zongyeshu1 + 1
+
+Else: zongyeshu = zongyeshu1
+
+End If
+
+Next j     '完成对该BOSS的统计
+
+'*******************************************************************************************************************
+
+If zongyeshu > 0 Then
+
+Dim k1, k2, k3, zys As Integer
+    k1 = 0
+    k2 = 0
+    k3 = 0
+    zys = 0
+
+For i = 0 To zongyeshu - 1          '*************************填充总工作量表***********************
+    '亦可用do until～～～loop 循环
+
+
+  If (i = 0) Or (k2 Mod 7 = 0 And k2 > 0 And k1 = 7) Then
+      hh5 = (zongyeshu + zys) * 31 + 1      '*****************************有点技巧
+      fuzhi33 = fuzhi(hh5, "BOSS报表")          '复制一张表格填充总工作量
+      bm5 = "工作量总报表"
+      xx5 = biaoti(hh5, bm5)
+      Sheets("BOSS报表").Cells(hh5 + 5, 1).Activate
+      ActiveCell.Offset(-1, 1) = "钻机归属"
+      ActiveCell.Offset(-1, 4) = "统计项目"
+      zys = zys + 1
+      k1 = 0
+   End If
+
+
+  Sheets("BOSS报表").Select
+
+  'zhi = Application.WorksheetFunction.Find("总", Sheets("BOSS报表").Cells(i * 31 + 1, 5), 3)
+
+  zhi = Sheets("BOSS报表").Cells(i * 31 + 6, 5)
+
+  If zhi = "单项合计" Then
+    Sheets("BOSS报表").Range(Sheets("BOSS报表").Cells(i * 31 + 6, 1), Sheets("BOSS报表").Cells(i * 31 + 8, 14)).Select
+    If k3 Mod 2 = 1 Then                         '**************************设置字体颜色****************************
+        Selection.Font.ColorIndex = 3     '红色
+    Else:
+        Selection.Font.ColorIndex = 5     '蓝色
+    End If
+    Selection.Copy
+
+    Sheets("BOSS报表").Cells(hh5 + k1 * 3 + 5, 1).Select
+    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+        False, Transpose:=False
+
+    Sheets("BOSS报表").Cells(i * 31 + 1, 1).Select
+
+    ActiveCell.Offset(0, 5).Font.ColorIndex = 3
+
+    ActiveCell.Offset(0, 5).Select              '*****************************颜色设置***********************
+    With Selection.Interior
+        .ColorIndex = 17
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+    End With
+
+    k1 = k1 + 1                'flag1,页内填充循环控制
+    k2 = k2 + 1                'flag2,插入模板控制
+    k3 = k3 + 1                'flag3,控制字体颜色
+  End If
+
+Next i
+
+zongyeshu = zongyeshu + zys
+
+End If
+
+
+'*******************************************************************************************************************
+
+dy3 = dayin(zongyeshu, "BOSS报表")
+
+'*******************************************************************************************************************
+
+
+ hh2 = UserForm3.jshh("BOSS报表")
+
+
+ 'UserForm3.Label1.Caption = "处理完毕下次再见！"
+ 'Sheets("BOSS报表").Select
+ 'T2 = Time
+ 'msg3 = MsgBox("       处理用时" & Chr(13) & T1 & "--" & T2 & Chr(13) & "       用时" & Minute(T2 - T1) & ":" & Second(T2 - T1), vbOKOnly, "      处理完毕")
+ 'UserForm3.Hide
+
+'End If                                            '***************************************************针对空表格
+
+Application.ScreenUpdating = True
+
+End Sub
+
+Sub 机组信息充填()   '*****************************************钻机编号、BOSS姓名填充********************************************************
+
+hh1 = UserForm3.kshh("机组信息", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+Sheets("原始资料").Select
+
+n = Application.WorksheetFunction.CountIf([A5:A3000], "*") '确定有多少行数据
+
+For i = 1 To n
+
+Sheets("原始资料").Cells(4 + i, 16).Activate
+ActiveCell.Offset(0, 1).FormulaR1C1 = _
+        "=IF(RC[-1]<>"""",VLOOKUP(RC[-1],钻机编号!data1,2,FALSE),"""")"
+ActiveCell.Offset(0, 2).FormulaR1C1 = _
+        "=IF(RC[-2]<>"""",VLOOKUP(RC[-2],钻机编号!data1,3,FALSE),"""")"
+
+Next i
+
+hh2 = UserForm3.jshh("原始资料")
+Application.ScreenUpdating = True
+
+End Sub
+
+Sub 老资料利用()   '**************************************************老资料利用****************************************************************
+
+hh1 = UserForm3.kshh("引用老资料", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+'Sheets("原始资料").Range("P5:P3000,G5:G3000,H5:H3000").Select
+'Selection.ClearContents
+
+
+hsh = Application.WorksheetFunction.CountIf([C5:C3000], "*") '确定有多少行数据
+
+Dim k, L, M As Integer
+Sheets("原始资料").Select
+For i = 1 To hsh
+  k = Sheets("原始资料").Cells(i + 4, 3)
+  Sheets("原始资料").Cells(4 + i, 7).Activate
+     For j = 1 To 550
+       L = Sheets("老资料").Cells(j + 5, 4)
+       If k = L Then
+       ActiveCell = Sheets("老资料").Cells(j + 5, 8)
+       ActiveCell.Offset(0, 1) = Sheets("老资料").Cells(j + 5, 9)
+       ActiveCell.Offset(0, 9) = Sheets("老资料").Cells(j + 5, 23)
+        Exit For
+       End If
+     Next j
+Next i
+
+hh2 = UserForm3.jshh("原始资料")
+Application.ScreenUpdating = True
+
+End Sub
+
+Sub 新钻孔资料完善()     '新钻孔资料利用
+
+hh1 = UserForm3.kshh("新钻孔资料完善", T)
+    If T = 0 Then
+      End
+    End If
+Application.ScreenUpdating = False
+
+'Sheets("新钻孔导入").Select
+'Sheets("新钻孔导入").Cells(2, 20).Activate
+'Do Until IsEmpty(ActiveCell.Offset(0, -18))
+'ActiveCell.FormulaR1C1 = "=REPLACE(RC[-18],1,10,"""")"
+'ActiveCell.Offset(1, 0).Select
+'Loop
+
+'*************************************已经在USERFORM5中实现转换*********************************************
+
+hsh = Application.WorksheetFunction.CountIf([C5:C3000], "*") '确定有多少行数据
+
+Dim k, L, M As Integer
+Sheets("原始资料").Select
+For i = 1 To hsh
+If IsEmpty(Sheets("原始资料").Cells(i + 4, 7)) Then
+
+  Sheets("原始资料").Cells(4 + i, 7).Select
+  k = Sheets("原始资料").Cells(i + 4, 3)
+     For j = 1 To 200
+       L = Sheets("新钻孔导入").Cells(j + 1, 21)
+       If k = L Then
+       ActiveCell = Sheets("新钻孔导入").Cells(j + 1, 18)
+    With Selection.Interior
+        .ColorIndex = 17
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+    End With
+       ActiveCell.Offset(0, 1) = Sheets("新钻孔导入").Cells(j + 1, 19)
+       ActiveCell.Offset(0, 9) = Sheets("新钻孔导入").Cells(j + 1, 17)
+        Exit For
+       End If
+     Next j
+
+    If IsEmpty(Sheets("原始资料").Cells(i + 4, 7)) Then
+    ActiveCell = "陆地"
+    ActiveCell.Offset(0, 1) = "30"
+    ActiveCell.Offset(0, 9) = "26"
+    Sheets("原始资料").Rows(i + 4).Font.ColorIndex = 3
+    End If
+
+
+End If
+
+Next i
+
+hh2 = UserForm3.jshh("原始资料")
+Application.ScreenUpdating = True
+
+End Sub
+
+Private Sub Worksheet_Activate()
+ Application.CommandBars("快速查看").Visible = True
+ Application.CommandBars("完善钻孔资料").Visible = True
+ Application.CommandBars("表格生成").Visible = True
+
+Static w As Integer
+If w = 0 Then
+
+ Dim newSubItem1, newSubItem2, newSubItem3 As Object
+
+   Set newSubItem1 = CommandBars("表格生成")
+   With newSubItem1
+      '.Controls.Add(Type:=msoControlButton, before:=1).Caption = "subItem1"   其具体意义值得 研究
+
+      .Controls("工作量报表").OnAction = "sheet1.工作量报表"
+      .Controls("钻机报表").OnAction = "sheet1.钻机报表"
+      .Controls("BOSS报表").OnAction = "sheet1.BOSS报表"
+   End With
+
+   Set newSubItem2 = CommandBars("完善钻孔资料")
+   With newSubItem2
+      '.Controls.Add(Type:=msoControlButton, before:=1).Caption = "subItem1"   其具体意义值得 研究
+
+      .Controls("老资料利用").OnAction = "sheet1.老资料利用"
+      .Controls("新钻孔信息导入").OnAction = "sheet1.新钻孔资料完善"
+      .Controls("机组信息填充").OnAction = "sheet1.机组信息充填"
+   End With
+
+   Set newSubItem3 = CommandBars("快速查看")
+   With newSubItem3
+      '.Controls.Add(Type:=msoControlButton, before:=1).Caption = "subItem1"   其具体意义值得 研究
+
+      .Controls("排序查看").OnAction = "sheet1.查看"
+   End With
+   w = 0
+
+End If
+
+ w = 1
+
+End Sub
+
+Private Sub Worksheet_Deactivate()
+ Application.CommandBars("表格生成").Visible = False
+ Application.CommandBars("完善钻孔资料").Visible = False
+End Sub
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub
+
+
+
+
+
